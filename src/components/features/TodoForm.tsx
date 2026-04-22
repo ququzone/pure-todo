@@ -96,3 +96,5 @@ export const TodoForm: React.FC = () => {
     </motion.form>
   );
 };
+
+export default TodoForm;
