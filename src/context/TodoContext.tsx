@@ -48,27 +48,33 @@ export function TodoProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleTodo = async (id: number | string) => {
+    const previousTodos = [...todos];
     try {
+      setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+
       const db = await getDB();
       const todo = await db.get('todos', id);
       if (todo) {
         const updatedTodo = { ...todo, completed: !todo.completed };
         await db.put('todos', updatedTodo);
-        setTodos((prev) => prev.map((t) => (t.id === id ? updatedTodo : t)));
       }
     } catch (error) {
       console.error('Failed to toggle todo:', error);
+      setTodos(previousTodos);
       throw error;
     }
   };
 
   const deleteTodo = async (id: number | string) => {
+    const previousTodos = [...todos];
     try {
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+
       const db = await getDB();
       await db.delete('todos', id);
-      setTodos((prev) => prev.filter((t) => t.id !== id));
     } catch (error) {
       console.error('Failed to delete todo:', error);
+      setTodos(previousTodos);
       throw error;
     }
   };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { useTodoContext } from '../../context/TodoContext';
@@ -41,7 +42,13 @@ export const TodoForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+    <motion.form
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      onSubmit={handleSubmit}
+      className="space-y-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           id="todo-text"

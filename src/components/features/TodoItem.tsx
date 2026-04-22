@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useTodoContext } from '../../context/TodoContext';
 import { Todo } from '../../types/todo';
 import { Button } from '../ui/Button';
@@ -12,7 +13,14 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const { toggleTodo, deleteTodo } = useTodoContext();
 
   return (
-    <li className="flex items-center justify-between p-4 bg-white border-b last:border-b-0 hover:bg-gray-50 transition-colors group">
+    <motion.li
+      layout
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ duration: 0.2 }}
+      className="flex items-center justify-between p-4 bg-white border-b last:border-b-0 hover:bg-gray-50 transition-colors group"
+    >
       <div className="flex items-center gap-4 flex-1">
         <input
           type="checkbox"
