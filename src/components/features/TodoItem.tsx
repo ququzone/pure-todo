@@ -54,6 +54,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
           <span className="sr-only">Delete</span>
         </Button>
       </div>
-    </li>
+    </motion.li>
   );
 };

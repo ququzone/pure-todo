@@ -93,6 +93,6 @@ export const TodoForm: React.FC = () => {
       <div className="flex justify-end">
         <Button type="submit">Add Todo</Button>
       </div>
-    </form>
+    </motion.form>
   );
 };

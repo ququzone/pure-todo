@@ -123,7 +123,7 @@ describe('TodoList & TodoItem', () => {
 
     expect(screen.getByText('Test Todo 1')).toBeInTheDocument();
     expect(screen.getByText('high')).toBeInTheDocument();
-    expect(screen.getByText('Work')).toBeInTheDocument();
+    expect(screen.getAllByText('Work')[1]).toBeInTheDocument();
   });
 
   it('calls toggleTodo from context when checkbox is clicked', async () => {
