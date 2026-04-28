@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom/vitest';
@@ -18,7 +17,7 @@ describe('TodoForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useTodoContext as any).mockReturnValue({
+    (useTodoContext as ReturnType<typeof vi.fn>).mockReturnValue({
       addTodo: mockAddTodo,
     });
   });
@@ -58,7 +57,6 @@ describe('TodoForm', () => {
   it('prevents submission if text is empty', async () => {
     render(<TodoForm />);
 
-    // Leave text empty
     fireEvent.change(screen.getByLabelText(/priority/i), { target: { value: 'low' } });
 
     const submitButtons = screen.getAllByRole('button', { name: /add todo/i });

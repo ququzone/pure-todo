@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { Select } from '../ui/Select';
 import { useTodoContext } from '../../context/TodoContext';
 import { Priority } from '../../types/todo';
+
+const PRIORITY_OPTIONS = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+];
 
 export const TodoForm: React.FC = () => {
   const { addTodo } = useTodoContext();
@@ -13,7 +20,7 @@ export const TodoForm: React.FC = () => {
   const [dueDate, setDueDate] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -31,12 +38,11 @@ export const TodoForm: React.FC = () => {
         completed: false,
       });
 
-      // Reset form on success
       setText('');
       setPriority('medium');
       setCategory('');
       setDueDate('');
-    } catch (err) {
+    } catch {
       setError('Failed to add todo');
     }
   };
@@ -58,19 +64,13 @@ export const TodoForm: React.FC = () => {
           onChange={(e) => setText(e.target.value)}
           error={error && !text ? error : undefined}
         />
-        <div className="flex flex-col gap-1.5 w-full">
-          <label htmlFor="todo-priority" className="text-sm font-medium text-gray-700">Priority</label>
-          <select
-            id="todo-priority"
-            className="px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as Priority)}
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
+        <Select
+          id="todo-priority"
+          label="Priority"
+          options={PRIORITY_OPTIONS}
+          value={priority}
+          onChange={(v) => setPriority(v as Priority)}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -96,5 +96,3 @@ export const TodoForm: React.FC = () => {
     </motion.form>
   );
 };
-
-export default TodoForm;

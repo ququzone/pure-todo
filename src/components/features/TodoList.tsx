@@ -1,24 +1,21 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Inbox } from 'lucide-react';
+import { useTodoContext } from '../../context/TodoContext';
 import { useTodos } from '../../hooks/useTodos';
 import { TodoItem } from './TodoItem';
 import { TodoFilters } from './TodoFilters';
 
 export const TodoList: React.FC = () => {
+  const { todos: allTodos, isLoading } = useTodoContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
-  const { todos, isLoading } = useTodos(
-    'all',
-    categoryFilter,
-    priorityFilter,
-    searchQuery
-  );
+  const { todos } = useTodos(categoryFilter, priorityFilter, searchQuery);
 
   const categories = Array.from(new Set(
-    todos.map((todo) => todo.category)
+    allTodos.map((todo) => todo.category)
   )).filter(Boolean) as string[];
 
   if (isLoading) {
@@ -63,5 +60,3 @@ export const TodoList: React.FC = () => {
     </div>
   );
 };
-
-export default TodoList;

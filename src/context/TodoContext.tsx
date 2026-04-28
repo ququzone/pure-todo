@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Todo, Priority } from '../types/todo';
-import { getDB } from '../lib/db';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Todo } from '../types/todo';
+import { fetchAllTodos, createTodo, updateTodo, removeTodo } from '../services/todoService';
 
 interface TodoContextType {
   todos: Todo[];
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt'>) => Promise<void>;
-  toggleTodo: (id: number | string) => Promise<void>;
-  deleteTodo: (id: number | string) => Promise<void>;
+  toggleTodo: (id: string) => Promise<void>;
+  deleteTodo: (id: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -17,46 +17,24 @@ export function TodoProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadTodos = async () => {
-      try {
-        const db = await getDB();
-        const allTodos = await db.getAll('todos');
-        setTodos(allTodos);
-      } catch (error) {
-        console.error('Failed to load todos from IndexedDB:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadTodos();
+    fetchAllTodos()
+      .then(setTodos)
+      .catch((error) => console.error('Failed to load todos:', error))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const addTodo = async (todoData: Omit<Todo, 'id' | 'createdAt'>) => {
-    try {
-      const db = await getDB();
-      const newTodo: Todo = {
-        ...todoData,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-      };
-      await db.put('todos', newTodo);
-      setTodos((prev) => [...prev, newTodo]);
-    } catch (error) {
-      console.error('Failed to add todo:', error);
-      throw error;
-    }
+    const newTodo = await createTodo(todoData);
+    setTodos((prev) => [...prev, newTodo]);
   };
 
-  const toggleTodo = async (id: number | string) => {
+  const toggleTodo = async (id: string) => {
     const previousTodos = [...todos];
     try {
       setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
-
-      const db = await getDB();
-      const todo = await db.get('todos', id);
-      if (todo) {
-        const updatedTodo = { ...todo, completed: !todo.completed };
-        await db.put('todos', updatedTodo);
+      const target = todos.find((t) => t.id === id);
+      if (target) {
+        await updateTodo(id, { completed: !target.completed });
       }
     } catch (error) {
       console.error('Failed to toggle todo:', error);
@@ -65,13 +43,11 @@ export function TodoProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const deleteTodo = async (id: number | string) => {
+  const deleteTodo = async (id: string) => {
     const previousTodos = [...todos];
     try {
       setTodos((prev) => prev.filter((t) => t.id !== id));
-
-      const db = await getDB();
-      await db.delete('todos', id);
+      await removeTodo(id);
     } catch (error) {
       console.error('Failed to delete todo:', error);
       setTodos(previousTodos);

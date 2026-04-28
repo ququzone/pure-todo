@@ -1,6 +1,4 @@
-import React from 'react';
-
-type Priority = 'low' | 'medium' | 'high';
+import { Priority } from '../../types/todo';
 
 interface BadgeProps {
   priority: Priority;
